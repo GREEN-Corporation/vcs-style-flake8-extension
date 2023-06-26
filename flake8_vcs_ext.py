@@ -50,7 +50,7 @@ class Visitor(ast.NodeVisitor):
 
 class Plugin:
 	name = __name__
-	version = importlib_metadata.version("1.0.0")
+	version = importlib_metadata.version("vcs-style-flake8-extension")
 
 	def __init__(self, tree: ast.AST) -> None:
 		self._tree = tree
