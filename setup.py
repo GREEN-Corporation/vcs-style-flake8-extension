@@ -10,7 +10,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "readme.md").read_text()
 
 setuptools.setup(
-	name="flake8_example",
+	name="vcs-style-flake8-extension",
 	license="GPL-2.0 license",
 	version="1.0.0",
 	description="Плагин flake8 с проверкой на дополнительные стандарты кода, "
