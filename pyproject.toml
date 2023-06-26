@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "vcs-style-flake8-extension"
+version = "1.0.0"
+description = ""
+authors = ["Debianov <regdeb@mail.ru>"]
+readme = "readme.md"
+packages = [
+	{ include = "flake8_vcs_ext.py" },
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flake8 = "^6.0.0"
+pytest = "^7.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
