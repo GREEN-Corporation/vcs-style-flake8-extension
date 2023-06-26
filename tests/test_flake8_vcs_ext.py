@@ -4,7 +4,7 @@ import sys
 import pytest
 from typing import Set, List
 
-from flake8_clean_block import Plugin
+from flake8_vcs_ext import Plugin
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(THIS_DIR)
