@@ -1,12 +1,44 @@
 from typing import Tuple
 
-case_1a = """
-import aboba
+case_print = (
+"""print("kurwa"
+	"dasdasd"
+	"dsfsf")"""
+)
 
-print("kurwa")
+case_if = (
+"""if (aboba
+	and bvs
+	and string):
+		pass"""
+)
+
+case_def = (
 """
+def base(
+	a1,
+	a100,
+	a2,
+	a3
+):
+	pass
+"""
+)
+
+case_in_context = (
+"""import github
+import greenlogistic
+
+print(
+	greenlogistic.name,
+	greenlogistic.date
+	)"""
+)
 
 def collect_all_cases() -> Tuple[str]:
 	return (
-		case_1a,
+		case_print,
+		case_def,
+		case_if,
+		case_in_context
 	)
