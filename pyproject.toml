@@ -1,6 +1,10 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "flake8_vcs_ext"
-version = "1.0.0"
+version = "2.0.0"
 description = "Плагин flake8 с проверкой на дополнительные стандарты кода, принятые на проекте VCS"
 authors = ["Debianov <regdeb@mail.ru>"]
 readme = "readme.md"
@@ -13,14 +17,16 @@ classifiers = [
 	"Operating System :: OS Independent",
 ]
 
+include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "readme.md"]
+
 [tool.poetry.urls]
 "Repository" = "https://github.com/GREEN-Corporation/vcs-style-flake8-extension"
 
-[tool.poetry.plugins."entry_points.flake8.extension"]
-"vcs0001" = "flake8_vcs_ext:Plugin"
+[tool.poetry.plugins."flake8.extension"]
+VCS001 = "flake8_vcs_ext:Plugin"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 flake8 = "^6.0.0"
 pytest = "^7.4.0"
-mypy = "^1.4.1"
+mypy = "^1.4.1"	
