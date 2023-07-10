@@ -1,65 +1,73 @@
 import ast
 import pycodestyle
+from typing import Final, Generator, Tuple, Type, Any, List, Iterable, Optional, Union
 
-from typing import Final, Generator, Tuple, Type, Any, List, Iterable, Optional
+from _types import bodyStmts
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
+def _containsSameIntegers(args: Iterable[int]) -> bool:
+	if set(args) == 1:
+		return True
+	return False
+
 class MultilineDeterminator:
 
-	def __init__(self, tree) -> None:
+	def __init__(self, tree: ast.stmt) -> None:
 		self.tree = tree
-		self.problems = []
 
-	def checkAllMultilines(self):
-		self.findAllMultilines()
-
-	def findAllMultilines(self):
-		for node in self.tree.body:
+	def getMultilinesIntents(self) -> List[ast.arg]: # type: ignore
+		for node in self.tree.body: # type: ignore
 			if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
-				self.findInFunctionDef(node)
-			if isinstance(node, ast.ClassDef):
-				self.findInClassDef(node)
+				return self._findMultilinesInFunctionDef(node) # type: ignore
+			elif isinstance(node, ast.ClassDef):
+				return self._findMultilinesInClassDef(node)
 
-	def findInFunctionDef(self, node) -> None:
+	def _findMultilinesInFunctionDef(self, node: ast.FunctionDef) -> List[ast.arg]:
 		args = node.args.args
-		args_intents = map(lambda x: x.col_offset, args)
-		if not self.containsSameIntents(args_intents):
-			arg_with_differ_intent = self.getArgWithDifferIntent(args_intents)
-			self.problems.append(arg_with_differ_intent.lineno,
-				arg_with_differ_intent.col_offset)
+		args_lineno = map(lambda x: x.lineno, args)
+		if _containsSameIntegers(args_lineno):
+			return []
+		return args
 
-	def findInClassDef(self, node):
+	def _findMultilinesInClassDef(self, node: ast.ClassDef) -> List[ast.arg]: # type: ignore
 		for functionDef in node.body:
-			self.findInFunctionDef(functionDef)
-	
-	def containsSameIntents(self, args) -> bool:
-		if set(args) == 1:
-			return False
-		return True
+			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
 
-	def getArgWithDifferIntent(self, args):
-		last_intent: int = 0
-		for arg in args:
+class IntentChecker:
+	
+	def __init__(self, args: List[ast.arg]) -> None:
+		self.args = args
+		self.problems: List[Tuple[int, int]] = []
+
+	def updateProblems(self) -> None:
+		self._checkMultilinesIntents()
+
+	def _checkMultilinesIntents(self) -> None:
+		args_intents = map(lambda x: x.col_offset, self.args)
+		if not _containsSameIntegers(args_intents):
+			arg_with_differ_intent = self._getArgWithDifferIntent(self.args)
+			self.problems.append((arg_with_differ_intent.lineno,
+				arg_with_differ_intent.col_offset))
+			
+	def _getArgWithDifferIntent(self, args_intents: List[ast.arg])\
+		-> Union[None, List[ast.arg]]:
+		last_intent = args_intents[0].col_offset
+		for arg in args_intents[1:]:
 			if arg.col_offset != last_intent:
 				return arg
 			last_intent = arg.col_offset
 
-	def checkMultiline(self):
-		pass
-
 class Plugin:
 
-	def __init__(
-			self,
-			tree,
-		)\
-		-> None:
+	def __init__(self, tree: ast.stmt) -> None:
 		self.tree = tree
 
 	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]: # иначе
 		# TypeError: 'Plugin' object is not iterable
 		determinator = MultilineDeterminator(self.tree)
-		determinator.checkAllMultilines()
-		for (lineno, col) in determinator.problems:
+		intents = determinator.getMultilinesIntents()
+		checker = IntentChecker(intents) # type: ignore
+		checker.updateProblems()
+		for (lineno, col) in checker.problems:
 			yield lineno, col, MSG_VCS001, type(self)
