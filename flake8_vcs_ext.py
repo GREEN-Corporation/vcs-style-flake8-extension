@@ -1,8 +1,14 @@
 import ast
-import pycodestyle
-from typing import Final, Generator, Tuple, Type, Any, List, Iterable, Optional, Union
-
-from _types import bodyStmts
+from typing import (
+	Final,
+	Generator,
+	Tuple,
+	Type,
+	Any,
+	List,
+	Iterable,
+	Union
+)
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
@@ -18,19 +24,22 @@ class MultilineDeterminator:
 
 	def getMultilinesIntents(self) -> List[ast.arg]: # type: ignore
 		for node in self.tree.body: # type: ignore
-			if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
+			if (isinstance(node, ast.FunctionDef) or
+				isinstance(node, ast.AsyncFunctionDef)):
 				return self._findMultilinesInFunctionDef(node) # type: ignore
 			elif isinstance(node, ast.ClassDef):
 				return self._findMultilinesInClassDef(node)
 
-	def _findMultilinesInFunctionDef(self, node: ast.FunctionDef) -> List[ast.arg]:
+	def _findMultilinesInFunctionDef(self, node: ast.FunctionDef)\
+		-> List[ast.arg]:
 		args = node.args.args
 		args_lineno = map(lambda x: x.lineno, args)
 		if _containsSameIntegers(args_lineno):
 			return []
 		return args
 
-	def _findMultilinesInClassDef(self, node: ast.ClassDef) -> List[ast.arg]: # type: ignore
+	def _findMultilinesInClassDef(self, node: ast.ClassDef)\
+		-> List[ast.arg]: # type: ignore
 		for functionDef in node.body:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
 
@@ -63,8 +72,9 @@ class Plugin:
 	def __init__(self, tree: ast.stmt) -> None:
 		self.tree = tree
 
-	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]: # иначе
-		# TypeError: 'Plugin' object is not iterable. Вместо __iter__ должен быть run
+	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+		# иначе TypeError: 'Plugin' object is not iterable. Вместо __iter__
+		# должен быть run
 		determinator = MultilineDeterminator(self.tree)
 		intents = determinator.getMultilinesIntents()
 		if intents:
