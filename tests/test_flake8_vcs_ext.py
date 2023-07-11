@@ -23,10 +23,9 @@ def _results(src_code: str) -> Set[str]:
 def test_ok_cases(src_code: str) -> None:
    assert _results(src_code) == set()
 
-@pytest.mark.parametrize('src_code, lines', bad_cases.collect_all_cases())
-def test_no_ok_cases(src_code: str, lines: List[int]) -> None:
+@pytest.mark.parametrize('src_code, line, offset', bad_cases.collect_all_cases())
+def test_no_ok_cases(src_code: str, line: int, offset: int) -> None:
 	expected_violation_messages = {
-		f'{line}:0 VCS001 no tab for line continuation'
-		for line in lines
+		f'{line}:{offset} VCS001 no one tab for line continuation'
 	}
 	assert _results(src_code) == expected_violation_messages
