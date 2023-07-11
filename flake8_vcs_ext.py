@@ -1,14 +1,5 @@
 import ast
-from typing import (
-	Final,
-	Generator,
-	Tuple,
-	Type,
-	Any,
-	List,
-	Iterable,
-	Union
-)
+from typing import Any, Final, Generator, Iterable, List, Tuple, Type, Union
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 

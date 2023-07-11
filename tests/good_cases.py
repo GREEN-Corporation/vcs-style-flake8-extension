@@ -1,4 +1,4 @@
-from typing import Tuple, Literal
+from typing import Literal, Tuple
 
 case_print = (
 """print("kurwa"

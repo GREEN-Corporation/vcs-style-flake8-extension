@@ -1,11 +1,12 @@
-import os
 import ast
+import os
 import sys
-import pytest
 from typing import Set
 
-import tests.good_cases as good_cases
+import pytest
+
 import tests.bad_cases as bad_cases
+import tests.good_cases as good_cases
 from flake8_vcs_ext import Plugin
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
