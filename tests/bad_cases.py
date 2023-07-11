@@ -1,4 +1,6 @@
-from typing import List, Tuple
+from typing import List, Tuple, Literal
+
+bad_case = Tuple[Literal[''], List[int]]
 
 case_two_tabs = (
 """print("kurwa"
@@ -41,9 +43,9 @@ print(
 
 case_in_context = (case_in_context, [6])
 
-def collect_all_cases() -> Tuple[Tuple[str, List[int]]]:
+def collect_all_cases() -> Tuple[bad_case]:
 	return (
-		case_two_tabs,
+		case_two_tabs, # type: ignore
 		case_if_four_tabs_and_space,
 		case_def_with_diff_indents,
 		case_in_context

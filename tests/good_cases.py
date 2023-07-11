@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Literal
 
 case_print = (
 """print("kurwa"
@@ -35,9 +35,9 @@ print(
 	)"""
 )
 
-def collect_all_cases() -> Tuple[str]:
+def collect_all_cases() -> Tuple[Literal['']]:
 	return (
-		case_print,
+		case_print, # type: ignore
 		case_def,
 		case_if,
 		case_in_context
