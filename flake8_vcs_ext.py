@@ -6,8 +6,8 @@ from _types import bodyStmts
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
-def _containsSameIntegers(args: Iterable[int]) -> bool:
-	if len(set(args)) == 1:
+def _containsSameIntegers(target: Iterable[int]) -> bool:
+	if len(set(target)) == 1:
 		return True
 	return False
 
