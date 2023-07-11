@@ -7,7 +7,7 @@ from _types import bodyStmts
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
 def _containsSameIntegers(args: Iterable[int]) -> bool:
-	if set(args) == 1:
+	if len(set(args)) == 1:
 		return True
 	return False
 
@@ -64,10 +64,11 @@ class Plugin:
 		self.tree = tree
 
 	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]: # иначе
-		# TypeError: 'Plugin' object is not iterable
+		# TypeError: 'Plugin' object is not iterable. Вместо __iter__ должен быть run
 		determinator = MultilineDeterminator(self.tree)
 		intents = determinator.getMultilinesIntents()
-		checker = IntentChecker(intents) # type: ignore
-		checker.updateProblems()
-		for (lineno, col) in checker.problems:
-			yield lineno, col, MSG_VCS001, type(self)
+		if intents:
+			checker = IntentChecker(intents) # type: ignore
+			checker.updateProblems()
+			for (lineno, col) in checker.problems:
+				yield lineno, col, MSG_VCS001, type(self)
