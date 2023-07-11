@@ -18,15 +18,13 @@ case_if_four_tabs_and_space = (
 case_if_four_tabs_and_space = (case_if_four_tabs_and_space, [2])
 
 case_def_with_diff_indents = (
-"""
-def base(
+"""def base(
 	a1,
 	a100,
 			a2,
 		a3
 ):
-	pass
-"""
+	pass"""
 )
 
 case_def_with_diff_indents = (case_def_with_diff_indents, [4])

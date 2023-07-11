@@ -14,15 +14,13 @@ case_if = (
 )
 
 case_def = (
-"""
-def base(
+"""def base(
 	a1,
 	a100,
 	a2,
 	a3
 ):
-	pass
-"""
+	pass"""
 )
 
 case_in_context = (
