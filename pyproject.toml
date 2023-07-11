@@ -31,6 +31,8 @@ flake8 = "^6.0.0"
 pytest = "^7.4.0"
 mypy = "^1.4.1"	
 flake8-pyproject = "^1.2.3"
+isort = "^5.12.0"
+flake8-isort = "^6.0.0"
 
 [tool.flake8]
 ignore = ['W191', 'E302', 'W191', 'W292', 'E305', 'E261', 'W293', 'E128', 'E122', 'E115', 'E262', 'E265', 'W504']
