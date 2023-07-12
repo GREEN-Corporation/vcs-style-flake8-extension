@@ -2,12 +2,12 @@ from typing import Literal, Tuple
 
 bad_case = Tuple[Literal[''], int, int]
 
-case_two_tabs = (
+case_print_two_tabs = (
 """print("kurwa"
 		"dsfsf")"""
 )
 
-case_two_tabs = (case_two_tabs, 2, 2)
+case_print_two_tabs = (case_print_two_tabs, 2, 2)
 
 case_if_with_diff_indents = (
 """if (aboba
@@ -29,7 +29,32 @@ case_def_with_diff_indents = (
 
 case_def_with_diff_indents = (case_def_with_diff_indents, 4, 3)
 
-case_in_context = (
+case_def_with_two_tabs = (
+"""def base(
+		a1,
+		a100,
+		a2,
+		a3
+):
+	pass"""
+)
+
+case_def_with_two_tabs = (case_def_with_two_tabs, 2, 2)
+
+case_class_def_with_diff_intents = (
+"""class Test:
+	def base(
+		a1,
+		a100,
+			a2,
+		a3
+	):
+		pass"""
+)
+
+case_class_def_with_diff_intents = (case_class_def_with_diff_intents, 5, 4)
+
+case_print_in_context = (
 """import github
 import greenlogistic
 
@@ -39,12 +64,14 @@ print(
 	)"""
 )
 
-case_in_context = (case_in_context, 6, 2)
+case_print_in_context = (case_print_in_context, 6, 2)
 
 def collect_all_cases() -> Tuple[bad_case]:
 	return (
-		case_two_tabs, # type: ignore
+		case_print_two_tabs, # type: ignore
 		case_if_with_diff_indents,
 		case_def_with_diff_indents,
-		case_in_context
+		case_def_with_two_tabs,
+		case_class_def_with_diff_intents,
+		case_print_in_context
 	)
