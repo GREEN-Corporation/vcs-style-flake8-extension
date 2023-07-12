@@ -19,7 +19,7 @@ class MultilineDeterminator:
 	def __init__(self, tree: ast.Module) -> None:
 		self.tree = tree
 
-	def getMultilinesIntents(self) -> Union[List[ast.arg], None]:
+	def getMultilinesIndents(self) -> Union[List[ast.arg], None]:
 		for node in self.tree.body:
 			if (isinstance(node, ast.FunctionDef) or
 				isinstance(node, ast.AsyncFunctionDef)):
@@ -40,18 +40,18 @@ class MultilineDeterminator:
 		for functionDef in node.body:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
 		
-class IntentChecker:
+class IndentChecker:
 	
 	def __init__(self, args: List[ast.arg]) -> None:
 		self.args = args
 		self.problems: List[Tuple[int, int]] = []
 
 	def updateProblems(self) -> None:
-		self._checkMultilinesIntents()
+		self._checkMultilinesIndents()
 
-	def _checkMultilinesIntents(self) -> None:
-		args_intents = list(map(lambda x: x.col_offset, self.args))
-		if not _containsAllOne(args_intents):
+	def _checkMultilinesIndents(self) -> None:
+		args_indents = list(map(lambda x: x.col_offset, self.args))
+		if not _containsAllOne(args_indents):
 			arg_with_indent_not_one = self._getArgWithIndentNotOne(self.args)
 			if not arg_with_indent_not_one:
 				raise Exception("A VCS001 mismatch was found, but the offending"
@@ -59,27 +59,27 @@ class IntentChecker:
 			self.problems.append((arg_with_indent_not_one.lineno,
 				arg_with_indent_not_one.col_offset))
 			return
-		if not _containsSameIntegers(args_intents):
-			arg_with_differ_intent = self._getArgWithDifferIntent(self.args)
-			if not arg_with_differ_intent:
+		if not _containsSameIntegers(args_indents):
+			arg_with_differ_indent = self._getArgWithDifferindent(self.args)
+			if not arg_with_differ_indent:
 				raise Exception("A VCS001 mismatch was found, but the offending"
 					" argument could not be determined.")
-			self.problems.append((arg_with_differ_intent.lineno,
-				arg_with_differ_intent.col_offset))
+			self.problems.append((arg_with_differ_indent.lineno,
+				arg_with_differ_indent.col_offset))
 			
-	def _getArgWithIndentNotOne(self, args_intents: List[ast.arg])\
+	def _getArgWithIndentNotOne(self, args_indents: List[ast.arg])\
 		-> Union[None, ast.arg]:
-		for arg in args_intents:
+		for arg in args_indents:
 			if arg.col_offset != 1:
 				return arg
 
-	def _getArgWithDifferIntent(self, args_intents: List[ast.arg])\
+	def _getArgWithDifferindent(self, args_indents: List[ast.arg])\
 		-> Union[None, ast.arg]:
-		last_intent = args_intents[0].col_offset
-		for arg in args_intents[1:]:
-			if arg.col_offset != last_intent:
+		last_indent = args_indents[0].col_offset
+		for arg in args_indents[1:]:
+			if arg.col_offset != last_indent:
 				return arg
-			last_intent = arg.col_offset
+			last_indent = arg.col_offset
 
 class Plugin:
 
@@ -90,9 +90,9 @@ class Plugin:
 		# иначе TypeError: 'Plugin' object is not iterable. Вместо __iter__
 		# должен быть run
 		determinator = MultilineDeterminator(self.tree)
-		intents = determinator.getMultilinesIntents()
-		if intents:
-			checker = IntentChecker(intents)
+		indents = determinator.getMultilinesIndents()
+		if indents:
+			checker = IndentChecker(indents)
 			checker.updateProblems()
 			for (lineno, col) in checker.problems:
 				yield lineno, col, MSG_VCS001, type(self)

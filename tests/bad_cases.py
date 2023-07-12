@@ -41,7 +41,7 @@ case_def_with_two_tabs = (
 
 case_def_with_two_tabs = (case_def_with_two_tabs, 2, 2)
 
-case_class_def_with_diff_intents = (
+case_class_def_with_diff_indents = (
 """class Test:
 	def base(
 		a1,
@@ -52,7 +52,7 @@ case_class_def_with_diff_intents = (
 		pass"""
 )
 
-case_class_def_with_diff_intents = (case_class_def_with_diff_intents, 5, 4)
+case_class_def_with_diff_indents = (case_class_def_with_diff_indents, 5, 4)
 
 case_print_in_context = (
 """import github
@@ -72,6 +72,6 @@ def collect_all_cases() -> Tuple[bad_case, ...]:
 		case_if_with_diff_indents,
 		case_def_with_diff_indents,
 		case_def_with_two_tabs,
-		case_class_def_with_diff_intents,
+		case_class_def_with_diff_indents,
 		case_print_in_context
 	)
