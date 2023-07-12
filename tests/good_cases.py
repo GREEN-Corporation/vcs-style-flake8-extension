@@ -33,9 +33,9 @@ print(
 	)"""
 )
 
-def collect_all_cases() -> Tuple[str]:
+def collect_all_cases() -> Tuple[str, ...]:
 	return (
-		case_print, # type: ignore
+		case_print,
 		case_if,
 		case_def,
 		case_in_context
