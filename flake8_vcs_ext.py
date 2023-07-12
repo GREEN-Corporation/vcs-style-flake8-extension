@@ -8,6 +8,12 @@ def _containsSameIntegers(target: Iterable[int]) -> bool:
 		return True
 	return False
 
+def _containsAllOne(target: List[int]) -> bool:
+	for number in target:
+		if number != 1:
+			return False
+	return True
+
 class MultilineDeterminator:
 
 	def __init__(self, tree: ast.Module) -> None:
@@ -45,12 +51,24 @@ class IntentChecker:
 
 	def _checkMultilinesIntents(self) -> None:
 		args_intents = map(lambda x: x.col_offset, self.args)
+		if not _containsAllOne(args_intents):
+			arg_with_indent_not_one = self._getArgWithIndentNotOne(self.args)
+			if arg_with_indent_not_one:
+				self.problems.append((arg_with_indent_not_one.lineno,
+					arg_with_indent_not_one.col_offset))
+			return
 		if not _containsSameIntegers(args_intents):
 			arg_with_differ_intent = self._getArgWithDifferIntent(self.args)
 			if arg_with_differ_intent:
 				self.problems.append((arg_with_differ_intent.lineno,
 					arg_with_differ_intent.col_offset))
 			
+	def _getArgWithIndentNotOne(self, args_intents: List[ast.arg])\
+		-> Union[None, ast.arg]:
+		for arg in args_intents:
+			if arg.col_offset != 1:
+				return arg
+
 	def _getArgWithDifferIntent(self, args_intents: List[ast.arg])\
 		-> Union[None, ast.arg]:
 		last_intent = args_intents[0].col_offset
