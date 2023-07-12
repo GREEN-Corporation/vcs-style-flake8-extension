@@ -36,7 +36,7 @@ print(
 def collect_all_cases() -> Tuple[Literal['']]:
 	return (
 		case_print, # type: ignore
-		case_def,
 		case_if,
+		case_def,
 		case_in_context
 	)
