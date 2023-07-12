@@ -1,5 +1,5 @@
 import ast
-from typing import Any, Final, Generator, Iterable, List, Tuple, Type, Union
+from typing import Any, Final, Generator, List, Tuple, Type, Union
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
@@ -53,15 +53,19 @@ class IntentChecker:
 		args_intents = list(map(lambda x: x.col_offset, self.args))
 		if not _containsAllOne(args_intents):
 			arg_with_indent_not_one = self._getArgWithIndentNotOne(self.args)
-			if arg_with_indent_not_one:
-				self.problems.append((arg_with_indent_not_one.lineno,
-					arg_with_indent_not_one.col_offset))
+			if not arg_with_indent_not_one:
+				raise Exception("A VCS001 mismatch was found, but the offending"
+					" argument could not be determined.")
+			self.problems.append((arg_with_indent_not_one.lineno,
+				arg_with_indent_not_one.col_offset))
 			return
 		if not _containsSameIntegers(args_intents):
 			arg_with_differ_intent = self._getArgWithDifferIntent(self.args)
-			if arg_with_differ_intent:
-				self.problems.append((arg_with_differ_intent.lineno,
-					arg_with_differ_intent.col_offset))
+			if not arg_with_differ_intent:
+				raise Exception("A VCS001 mismatch was found, but the offending"
+					" argument could not be determined.")
+			self.problems.append((arg_with_differ_intent.lineno,
+				arg_with_differ_intent.col_offset))
 			
 	def _getArgWithIndentNotOne(self, args_intents: List[ast.arg])\
 		-> Union[None, ast.arg]:
