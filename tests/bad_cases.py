@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Tuple
 
 bad_case = Tuple[str, int, int]
 

@@ -21,7 +21,7 @@ class MultilineDeterminator:
 			elif isinstance(node, ast.ClassDef):
 				return self._findMultilinesInClassDef(node)
 
-	def _findMultilinesInFunctionDef(self, 
+	def _findMultilinesInFunctionDef(self,
 		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
 		args = node.args.args
 		args_lineno = map(lambda x: x.lineno, args)
