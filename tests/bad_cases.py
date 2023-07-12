@@ -1,7 +1,5 @@
 from typing import Literal, Tuple
 
-bad_case = Tuple[Literal[''], int, int]
-
 case_print_two_tabs = (
 """print("kurwa"
 		"dsfsf")"""
@@ -66,7 +64,7 @@ print(
 
 case_print_in_context = (case_print_in_context, 6, 2)
 
-def collect_all_cases() -> Tuple[bad_case]:
+def collect_all_cases() -> Tuple[str]:
 	return (
 		case_print_two_tabs, # type: ignore
 		case_if_with_diff_indents,

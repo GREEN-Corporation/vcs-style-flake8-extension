@@ -33,7 +33,7 @@ print(
 	)"""
 )
 
-def collect_all_cases() -> Tuple[Literal['']]:
+def collect_all_cases() -> Tuple[str]:
 	return (
 		case_print, # type: ignore
 		case_if,
