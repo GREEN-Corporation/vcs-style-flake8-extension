@@ -3,7 +3,7 @@ from typing import Any, Final, Generator, Iterable, List, Tuple, Type, Union
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
-def _containsSameIntegers(target: Iterable[int]) -> bool:
+def _containsSameIntegers(target: List[int]) -> bool:
 	if len(set(target)) == 1:
 		return True
 	return False
@@ -30,7 +30,7 @@ class MultilineDeterminator:
 	def _findMultilinesInFunctionDef(self,
 		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
 		args = node.args.args
-		args_lineno = map(lambda x: x.lineno, args)
+		args_lineno = list(map(lambda x: x.lineno, args))
 		if _containsSameIntegers(args_lineno):
 			return []
 		return args
@@ -50,7 +50,7 @@ class IntentChecker:
 		self._checkMultilinesIntents()
 
 	def _checkMultilinesIntents(self) -> None:
-		args_intents = map(lambda x: x.col_offset, self.args)
+		args_intents = list(map(lambda x: x.col_offset, self.args))
 		if not _containsAllOne(args_intents):
 			arg_with_indent_not_one = self._getArgWithIndentNotOne(self.args)
 			if arg_with_indent_not_one:
