@@ -10,19 +10,19 @@ def _containsSameIntegers(target: Iterable[int]) -> bool:
 
 class MultilineDeterminator:
 
-	def __init__(self, tree: ast.stmt) -> None:
+	def __init__(self, tree: ast.Module) -> None:
 		self.tree = tree
 
-	def getMultilinesIntents(self) -> List[ast.arg]: # type: ignore
-		for node in self.tree.body: # type: ignore
+	def getMultilinesIntents(self) -> Union[List[ast.arg], None]:
+		for node in self.tree.body:
 			if (isinstance(node, ast.FunctionDef) or
 				isinstance(node, ast.AsyncFunctionDef)):
-				return self._findMultilinesInFunctionDef(node) # type: ignore
+				return self._findMultilinesInFunctionDef(node)
 			elif isinstance(node, ast.ClassDef):
 				return self._findMultilinesInClassDef(node)
 
-	def _findMultilinesInFunctionDef(self, node: ast.FunctionDef)\
-		-> List[ast.arg]:
+	def _findMultilinesInFunctionDef(self, 
+		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
 		args = node.args.args
 		args_lineno = map(lambda x: x.lineno, args)
 		if _containsSameIntegers(args_lineno):
@@ -30,10 +30,10 @@ class MultilineDeterminator:
 		return args
 
 	def _findMultilinesInClassDef(self, node: ast.ClassDef)\
-		-> List[ast.arg]: # type: ignore
+		-> Union[List[ast.arg], None]:
 		for functionDef in node.body:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
-
+		
 class IntentChecker:
 	
 	def __init__(self, args: List[ast.arg]) -> None:
@@ -47,11 +47,12 @@ class IntentChecker:
 		args_intents = map(lambda x: x.col_offset, self.args)
 		if not _containsSameIntegers(args_intents):
 			arg_with_differ_intent = self._getArgWithDifferIntent(self.args)
-			self.problems.append((arg_with_differ_intent.lineno,
-				arg_with_differ_intent.col_offset))
+			if arg_with_differ_intent:
+				self.problems.append((arg_with_differ_intent.lineno,
+					arg_with_differ_intent.col_offset))
 			
 	def _getArgWithDifferIntent(self, args_intents: List[ast.arg])\
-		-> Union[None, List[ast.arg]]:
+		-> Union[None, ast.arg]:
 		last_intent = args_intents[0].col_offset
 		for arg in args_intents[1:]:
 			if arg.col_offset != last_intent:
@@ -60,7 +61,7 @@ class IntentChecker:
 
 class Plugin:
 
-	def __init__(self, tree: ast.stmt) -> None:
+	def __init__(self, tree: ast.Module) -> None:
 		self.tree = tree
 
 	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
@@ -69,7 +70,7 @@ class Plugin:
 		determinator = MultilineDeterminator(self.tree)
 		intents = determinator.getMultilinesIntents()
 		if intents:
-			checker = IntentChecker(intents) # type: ignore
+			checker = IntentChecker(intents)
 			checker.updateProblems()
 			for (lineno, col) in checker.problems:
 				yield lineno, col, MSG_VCS001, type(self)
