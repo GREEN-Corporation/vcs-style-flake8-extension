@@ -26,6 +26,7 @@ class MultilineDeterminator:
 				return self._findMultilinesInFunctionDef(node)
 			elif isinstance(node, ast.ClassDef):
 				return self._findMultilinesInClassDef(node)
+		return None
 
 	def _findMultilinesInFunctionDef(self,
 		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
@@ -39,6 +40,7 @@ class MultilineDeterminator:
 		-> Union[List[ast.arg], None]:
 		for functionDef in node.body:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
+		return None
 		
 class IndentChecker:
 	
@@ -72,6 +74,7 @@ class IndentChecker:
 		for arg in args_indents:
 			if arg.col_offset != 1:
 				return arg
+		return None
 
 	def _getArgWithDifferindent(self, args_indents: List[ast.arg])\
 		-> Union[None, ast.arg]:
@@ -80,6 +83,7 @@ class IndentChecker:
 			if arg.col_offset != last_indent:
 				return arg
 			last_indent = arg.col_offset
+		return None
 
 class Plugin:
 

@@ -19,12 +19,12 @@ def _results(src_code: str) -> Set[str]:
 		f'{line}:{col} {msg}' for line, col, msg, _ in plugin.__iter__()
 	}
 
-@pytest.mark.parametrize('src_code', good_cases.collect_all_cases())
+@pytest.mark.parametrize('src_code', collect_all_good_cases())
 def test_good_cases(src_code: str) -> None:
 	assert _results(src_code) == set()
 
 @pytest.mark.parametrize('src_code, line, offset',
-	bad_cases.collect_all_cases())
+	collect_all_bad_cases())
 def test_bad_cases(src_code: str, line: int, offset: int) -> None:
 	expected_violation_messages = {
 		f'{line}:{offset} VCS001 no one tab for line continuation'
