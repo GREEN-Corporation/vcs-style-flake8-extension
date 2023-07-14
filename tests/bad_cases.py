@@ -69,7 +69,7 @@ case_print_in_context: bad_case_type = (case_print_in_context, 6, 2) # type: ign
 def collect_all_cases() -> Tuple[bad_case_type]:
 	return ( # type: ignore [return-value]
 		# case_print_two_tabs,
-		# case_if_with_diff_indents,
+		case_if_with_diff_indents,
 		case_def_with_diff_indents,
 		case_def_with_two_tabs,
 		case_class_def_with_diff_indents,

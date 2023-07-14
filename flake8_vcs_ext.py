@@ -14,13 +14,15 @@ class MultilineDeterminator:
 		self.tree = tree
 		self.correct_indent = 0
 
-	def getMultilinesIndents(self) -> Union[List[ast.arg], None]:
+	def getMultilinesIndents(self) -> Union[List[ast.arg], List[ast.Name], None]:
 		for node in self.tree.body:
 			if (isinstance(node, ast.FunctionDef) or
 				isinstance(node, ast.AsyncFunctionDef)):
 				return self._findMultilinesInFunctionDef(node)
 			elif isinstance(node, ast.ClassDef):
 				return self._findMultilinesInClassDef(node)
+			elif isinstance(node, ast.If):
+				return self._findMultilinesInIf(node)
 		return None
 
 	def getCorrectIndent(self) -> int:
@@ -44,9 +46,22 @@ class MultilineDeterminator:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
 		return None
 		
+	def _findMultilinesInIf(self, node: ast.If)\
+		-> Union[List[ast.Name], None]:
+		if_statement_indent = node.col_offset
+		indent_differ_inter_if_statement_and_signature = 1
+		self.correct_indent = (if_statement_indent +
+			indent_differ_inter_if_statement_and_signature)
+		operands = node.test.values
+		operands_lineno = list(map(lambda x: x.lineno, operands))
+		if _containsSameIntegers(operands_lineno):
+			return []
+		return operands
+
 class IndentChecker:
 	
-	def __init__(self, correct_indent: int, args: List[ast.arg]) -> None:
+	def __init__(self, correct_indent: int, args: List[Union[ast.arg, ast.Name]])\
+		-> None:
 		self.correct_indent = correct_indent
 		self.args = args
 		self.problems: List[Tuple[int, int]] = []
@@ -71,7 +86,7 @@ class IndentChecker:
 				return False
 		return True
 	
-	def _getArgWithIndentNotOne(self, args_indents: List[ast.arg])\
+	def _getArgWithIndentNotOne(self, args_indents: List[ast.arg, ast.Name])\
 		-> Union[None, ast.arg]:
 		for arg in args_indents:
 			if arg.col_offset != self.correct_indent:
