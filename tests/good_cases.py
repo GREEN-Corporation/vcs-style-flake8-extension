@@ -33,7 +33,7 @@ print(
 	)"""
 )
 
-def collect_all_good_cases() -> Tuple[str, ...]:
+def collect_all_cases() -> Tuple[str, ...]:
 	return (
 		case_print,
 		case_if,
