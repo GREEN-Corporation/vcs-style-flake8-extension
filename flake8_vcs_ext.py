@@ -28,7 +28,10 @@ class MultilineDeterminator:
 
 	def _findMultilinesInFunctionDef(self,
 		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
-		self.correct_indent = node.col_offset + 1
+		def_statement_indent = node.col_offset
+		indent_differ_inter_def_statement_and_body = 1
+		self.correct_indent = (def_statement_indent +
+			indent_differ_inter_def_statement_and_body)
 		args = node.args.args
 		args_lineno = list(map(lambda x: x.lineno, args))
 		if _containsSameIntegers(args_lineno):
