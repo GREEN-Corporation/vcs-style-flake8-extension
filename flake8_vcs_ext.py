@@ -103,7 +103,7 @@ class Plugin:
 		indents = determinator.getMultilinesIndents()
 		correct_indent = determinator.getCorrectIndent()
 		if indents:
-			checker = IndentChecker(correct_indent, indents)	
+			checker = IndentChecker(correct_indent, indents)
 			checker.updateProblems()
 			for (lineno, col) in checker.problems:
 				yield lineno, col, MSG_VCS001, type(self)
