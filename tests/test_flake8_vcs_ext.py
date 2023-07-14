@@ -5,9 +5,8 @@ from typing import Set
 
 import pytest
 
-from tests import bad_cases
-from tests import good_cases
 from flake8_vcs_ext import Plugin
+from tests import bad_cases, good_cases
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(THIS_DIR)
