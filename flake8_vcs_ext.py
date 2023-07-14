@@ -8,16 +8,11 @@ def _containsSameIntegers(target: List[int]) -> bool:
 		return True
 	return False
 
-def _containsAllOne(target: List[int]) -> bool:
-	for number in target:
-		if number != 1:
-			return False
-	return True
-
 class MultilineDeterminator:
 
 	def __init__(self, tree: ast.Module) -> None:
 		self.tree = tree
+		self.correct_indent = 0
 
 	def getMultilinesIndents(self) -> Union[List[ast.arg], None]:
 		for node in self.tree.body:
@@ -28,8 +23,12 @@ class MultilineDeterminator:
 				return self._findMultilinesInClassDef(node)
 		return None
 
+	def getCorrectIndent(self) -> int:
+		return self.correct_indent
+
 	def _findMultilinesInFunctionDef(self,
 		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
+		self.correct_indent = node.col_offset + 1
 		args = node.args.args
 		args_lineno = list(map(lambda x: x.lineno, args))
 		if _containsSameIntegers(args_lineno):
@@ -44,7 +43,8 @@ class MultilineDeterminator:
 		
 class IndentChecker:
 	
-	def __init__(self, args: List[ast.arg]) -> None:
+	def __init__(self, correct_indent: int, args: List[ast.arg]) -> None:
+		self.correct_indent = correct_indent
 		self.args = args
 		self.problems: List[Tuple[int, int]] = []
 
@@ -53,7 +53,7 @@ class IndentChecker:
 
 	def _checkMultilinesIndents(self) -> None:
 		args_indents = list(map(lambda x: x.col_offset, self.args))
-		if not _containsAllOne(args_indents):
+		if not self._allCorrect(args_indents):
 			arg_with_indent_not_one = self._getArgWithIndentNotOne(self.args)
 			if not arg_with_indent_not_one:
 				raise Exception("A VCS001 mismatch was found, but the offending"
@@ -61,18 +61,24 @@ class IndentChecker:
 			self.problems.append((arg_with_indent_not_one.lineno,
 				arg_with_indent_not_one.col_offset))
 			return
-		if not _containsSameIntegers(args_indents):
-			arg_with_differ_indent = self._getArgWithDifferindent(self.args)
-			if not arg_with_differ_indent:
-				raise Exception("A VCS001 mismatch was found, but the offending"
-					" argument could not be determined.")
-			self.problems.append((arg_with_differ_indent.lineno,
-				arg_with_differ_indent.col_offset))
+		# if not _containsSameIntegers(args_indents):
+		# 	arg_with_differ_indent = self._getArgWithDifferindent(self.args)
+		# 	if not arg_with_differ_indent:
+		# 		raise Exception("A VCS001 mismatch was found, but the offending"
+		# 			" argument could not be determined.")
+		# 	self.problems.append((arg_with_differ_indent.lineno,
+		# 		arg_with_differ_indent.col_offset))
 			
+	def _allCorrect(self, target: List[int]) -> bool:
+		for number in target:
+			if number != self.correct_indent:
+				return False
+		return True
+	
 	def _getArgWithIndentNotOne(self, args_indents: List[ast.arg])\
 		-> Union[None, ast.arg]:
 		for arg in args_indents:
-			if arg.col_offset != 1:
+			if arg.col_offset != self.correct_indent:
 				return arg
 		return None
 
@@ -95,8 +101,9 @@ class Plugin:
 		# должен быть run
 		determinator = MultilineDeterminator(self.tree)
 		indents = determinator.getMultilinesIndents()
+		correct_indent = determinator.getCorrectIndent()
 		if indents:
-			checker = IndentChecker(indents)
+			checker = IndentChecker(correct_indent, indents)	
 			checker.updateProblems()
 			for (lineno, col) in checker.problems:
 				yield lineno, col, MSG_VCS001, type(self)
