@@ -38,6 +38,7 @@ class MultilineDeterminator:
 		args_lineno = list(map(lambda x: x.lineno, args))
 		if _containsSameIntegers(args_lineno):
 			return []
+		args = self._removeObjectsOnSameLine(args)
 		return args
 
 	def _findMultilinesInClassDef(self, node: ast.ClassDef)\
@@ -49,14 +50,32 @@ class MultilineDeterminator:
 	def _findMultilinesInIf(self, node: ast.If)\
 		-> Union[List[ast.Name], None]:
 		if_statement_indent = node.col_offset
-		indent_differ_inter_if_statement_and_signature = 1
+		indent_differ_inter_if_statement_and_signature = 4
 		self.correct_indent = (if_statement_indent +
 			indent_differ_inter_if_statement_and_signature)
-		operands = node.test.values
+		operators = node.test
+		operands = operators.values
 		operands_lineno = list(map(lambda x: x.lineno, operands))
 		if _containsSameIntegers(operands_lineno):
 			return []
+		multilines_operands = self._removeObjectsOnSameLine(operands)
+		multilines_operators = self._removeObjectsOnSameLine(operators)
 		return operands
+
+	def _removeObjectsOnSameLine(
+		self,
+		signature_objects: List[Union[ast.Name, ast.arg]]
+	) -> List[Union[ast.Name, ast.arg]]:
+		result: List[Union[ast.Name, ast.arg]] = []
+		last_added_obj_lineno: int = 0
+		for obj in signature_objects:
+			if obj.lineno != 0 and obj.lineno > last_added_obj_lineno:
+				last_added_obj_lineno = obj.lineno
+				result.append(obj)
+		return result
+
+	def _mixOperandsAndOperators(self, operand: , operator):
+		pass
 
 class IndentChecker:
 	
@@ -86,7 +105,7 @@ class IndentChecker:
 				return False
 		return True
 	
-	def _getArgWithIndentNotOne(self, args_indents: List[ast.arg, ast.Name])\
+	def _getArgWithIndentNotOne(self, args_indents: List[Union[ast.arg, ast.Name]])\
 		-> Union[None, ast.arg]:
 		for arg in args_indents:
 			if arg.col_offset != self.correct_indent:
