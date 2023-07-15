@@ -1,6 +1,8 @@
 import ast
 from typing import Any, Final, Generator, List, Tuple, Type, Union
 
+from _types import LinenoSupportObject
+
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
 def _containsSameIntegers(target: List[int]) -> bool:
@@ -64,7 +66,7 @@ class MultilineDeterminator:
 
 	def _removeObjectsOnSameLine(
 		self,
-		signature_objects: List[Union[ast.Name, ast.arg]]
+		signature_objects: List[LinenoSupportObject]
 	) -> List[Union[ast.Name, ast.arg]]:
 		result: List[Union[ast.Name, ast.arg]] = []
 		last_added_obj_lineno: int = 0
@@ -74,8 +76,9 @@ class MultilineDeterminator:
 				result.append(obj)
 		return result
 
-	def _mixOperandsAndOperators(self, operand: , operator):
-		pass
+	def _mixOperandsAndOperators(self, operands, operators):
+		result = []
+		
 
 class IndentChecker:
 	

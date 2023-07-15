@@ -1,4 +1,5 @@
 import ast
 from typing import Union
 
-bodyStmts = Union[ast.FunctionDef, ast.ClassDef]
+class LinenoSupportObject:
+	lineno: int
