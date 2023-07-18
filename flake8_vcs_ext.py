@@ -11,6 +11,10 @@ def isinstanceInIterable(target: Iterable[Any], classinfo: Any) -> bool:
 			return False
 	return True
 
+def dictsConcatenation(left_dict: Dict[Any, Any], right_dict: Dict[Any, Any])\
+	-> Dict[Any, Any]:
+	return dict(list(left_dict.items()) + list(right_dict.items()))
+
 class MultilineDeterminator:
 
 	def __init__(self, tree: ast.Module) -> None:
@@ -74,12 +78,13 @@ class MultilineDeterminator:
 			return []
 		multilines_operators = self._removeObjectsOnSameLine(linenums_operators)
 		multilines_operands = self._removeObjectsOnSameLine(linenums_operands)
-		multiline_objects_for_check = self._mixOperandsAndOperators(
-			multilines_operators,
-			multilines_operands,
-			node.lineno,
-			node.end_lineno
-		)
+		if node.end_lineno:
+			multiline_objects_for_check = self._mixOperandsAndOperators(
+				multilines_operators,
+				multilines_operands,
+				node.lineno,
+				node.end_lineno
+			)
 		return multiline_objects_for_check
 
 	def _containsSameLinenums(
@@ -93,19 +98,26 @@ class MultilineDeterminator:
 	def _removeObjectsOnSameLine(
 		self,
 		linenums_objs: LinenoStorage
-	) -> List[LinenoSupportObjects]:
-		result: List[LinenoSupportObjects] = []
+	) -> LinenoStorage:
+		result: LinenoStorage = {}
 		last_added_obj_lineno: int = 0
 		for (obj, lineno) in linenums_objs.items():
 			if lineno != 0 and lineno > last_added_obj_lineno:
 				last_added_obj_lineno = lineno
-				result.append(obj)
+				result.update({obj: lineno})
 		return result
 
-	# def _mixOperandsAndOperators(self, operators, operands, start_lineno, end_lineno):
-	# 	result = []
-
-	# 	for i in range(start_lineno, end_lineno + 1):
+	def _mixOperandsAndOperators(
+		self,
+		operators: LinenoStorage,
+		operands: LinenoStorage,
+		start_lineno: int,
+		end_lineno: int
+	) -> List[LinenoSupportObjects]:
+		result: List[LinenoSupportObjects] = dictsConcatenation(operators, operands)
+		result = dict(sorted(result.items(), key=lambda x: (x[1], x[0].col_offset)))
+		result = self._removeObjectsOnSameLine(result)
+		return result
 
 class IndentChecker:
 	
