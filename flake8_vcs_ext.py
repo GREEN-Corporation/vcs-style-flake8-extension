@@ -50,7 +50,8 @@ class MultilineDeterminator:
 	def _findMultilinesInClassDef(self, node: ast.ClassDef)\
 		-> Union[List[LinenoSupportObjects], None]:
 		for functionDef in node.body:
-			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
+			if isinstance(functionDef, ast.FunctionDef):
+				return self._findMultilinesInFunctionDef(functionDef)
 		return None
 		
 	def _findMultilinesInIf(self, node: ast.If)\
