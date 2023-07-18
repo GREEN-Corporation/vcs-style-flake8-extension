@@ -5,10 +5,10 @@ from _types import LinenoSupportObject
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
-def _containsSameIntegers(target: List[int]) -> bool:
-	if len(set(target)) == 1:
-		return True
-	return False
+def isinstanceInIterable(target: Iterable[Any], classinfo: Any) -> bool:
+	for obj in target:
+		if not isinstance(obj, classinfo):
+			return False
 
 class MultilineDeterminator:
 
