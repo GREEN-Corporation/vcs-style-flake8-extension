@@ -1,5 +1,5 @@
 import ast
-from typing import Union
+from typing import Union, Dict
 
-class LinenoSupportObject:
-	lineno: int
+LinenoSupportObjects = Union[ast.arg, ast.Name, ast.BoolOp]
+LinenoStorage = Dict[LinenoSupportObjects, int]

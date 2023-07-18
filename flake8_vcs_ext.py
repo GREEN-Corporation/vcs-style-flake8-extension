@@ -1,7 +1,7 @@
 import ast
-from typing import Any, Final, Generator, List, Tuple, Type, Union
+from typing import Any, Final, Generator, List, Tuple, Type, Union, Dict, Optional, Iterable
 
-from _types import LinenoSupportObject
+from _types import LinenoSupportObjects, LinenoStorage
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
@@ -9,6 +9,7 @@ def isinstanceInIterable(target: Iterable[Any], classinfo: Any) -> bool:
 	for obj in target:
 		if not isinstance(obj, classinfo):
 			return False
+	return True
 
 class MultilineDeterminator:
 
@@ -16,7 +17,7 @@ class MultilineDeterminator:
 		self.tree = tree
 		self.correct_indent = 0
 
-	def getMultilinesIndents(self) -> Union[List[ast.arg], List[ast.Name], None]:
+	def getMultilinesIndents(self) -> Union[List[LinenoSupportObjects], None]:
 		for node in self.tree.body:
 			if (isinstance(node, ast.FunctionDef) or
 				isinstance(node, ast.AsyncFunctionDef)):
@@ -30,55 +31,80 @@ class MultilineDeterminator:
 	def getCorrectIndent(self) -> int:
 		return self.correct_indent
 
-	def _findMultilinesInFunctionDef(self,
-		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> List[ast.arg]:
+	def _findMultilinesInFunctionDef(
+		self,
+		node: Union[ast.FunctionDef, ast.AsyncFunctionDef]
+	) -> List[LinenoSupportObjects]:
 		def_statement_indent = node.col_offset
 		indent_differ_inter_def_statement_and_body = 1
 		self.correct_indent = (def_statement_indent +
 			indent_differ_inter_def_statement_and_body)
 		args = node.args.args
-		args_lineno = list(map(lambda x: x.lineno, args))
-		if _containsSameIntegers(args_lineno):
+		linenums_args: LinenoStorage = dict(zip(args,
+			map(lambda x: x.lineno, args)))
+		if self._containsSameLinenums(list(linenums_args.values())):
 			return []
-		args = self._removeObjectsOnSameLine(args)
-		return args
+		multilines_args = self._removeObjectsOnSameLine(linenums_args)
+		return multilines_args
 
 	def _findMultilinesInClassDef(self, node: ast.ClassDef)\
-		-> Union[List[ast.arg], None]:
+		-> Union[List[LinenoSupportObjects], None]:
 		for functionDef in node.body:
 			return self._findMultilinesInFunctionDef(functionDef) # type: ignore
 		return None
 		
 	def _findMultilinesInIf(self, node: ast.If)\
-		-> Union[List[ast.Name], None]:
+		-> Union[List[LinenoSupportObjects], None]:
 		if_statement_indent = node.col_offset
 		indent_differ_inter_if_statement_and_signature = 4
 		self.correct_indent = (if_statement_indent +
 			indent_differ_inter_if_statement_and_signature)
-		operators = node.test
-		operands = operators.values
-		operands_lineno = list(map(lambda x: x.lineno, operands))
-		if _containsSameIntegers(operands_lineno):
+		maybe_operators = node.test
+		if isinstance(maybe_operators, ast.BoolOp):
+			operators: ast.BoolOp = maybe_operators
+		maybe_operands = operators.values
+		if isinstanceInIterable(maybe_operands, ast.Name):
+			operands: List[ast.Name] = maybe_operands # type: ignore
+		linenums_operators: LinenoStorage = {operators:
+			operators.lineno}
+		linenums_operands: LinenoStorage = dict(zip(operands, map(lambda x:
+			x.lineno, operands)))
+		if self._containsSameLinenums(list(linenums_operands.values())):
 			return []
-		multilines_operands = self._removeObjectsOnSameLine(operands)
-		multilines_operators = self._removeObjectsOnSameLine(operators)
-		return operands
+		multilines_operators = self._removeObjectsOnSameLine(linenums_operators)
+		multilines_operands = self._removeObjectsOnSameLine(linenums_operands)
+		multiline_objects_for_check = self._mixOperandsAndOperators(
+			multilines_operators,
+			multilines_operands,
+			node.lineno,
+			node.end_lineno
+		)
+		return multiline_objects_for_check
+
+	def _containsSameLinenums(
+		self,
+		linenums: List[int]
+	) -> bool:
+		if len(set(linenums)) == 1:
+			return True
+		return False
 
 	def _removeObjectsOnSameLine(
 		self,
-		signature_objects: List[LinenoSupportObject]
-	) -> List[Union[ast.Name, ast.arg]]:
-		result: List[Union[ast.Name, ast.arg]] = []
+		linenums_objs: LinenoStorage
+	) -> List[LinenoSupportObjects]:
+		result: List[LinenoSupportObjects] = []
 		last_added_obj_lineno: int = 0
-		for obj in signature_objects:
-			if obj.lineno != 0 and obj.lineno > last_added_obj_lineno:
-				last_added_obj_lineno = obj.lineno
+		for (obj, lineno) in linenums_objs.items():
+			if lineno != 0 and lineno > last_added_obj_lineno:
+				last_added_obj_lineno = lineno
 				result.append(obj)
 		return result
 
-	def _mixOperandsAndOperators(self, operands, operators):
-		result = []
-		
+	# def _mixOperandsAndOperators(self, operators, operands, start_lineno, end_lineno):
+	# 	result = []
+
+	# 	for i in range(start_lineno, end_lineno + 1):
 
 class IndentChecker:
 	
