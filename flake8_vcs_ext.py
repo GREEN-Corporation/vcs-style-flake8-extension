@@ -114,9 +114,27 @@ class MultilineDeterminator:
 		start_lineno: int,
 		end_lineno: int
 	) -> List[LinenoSupportObjects]:
-		result: List[LinenoSupportObjects] = dictsConcatenation(operators, operands)
+		operators = self._createOperatorObjForEachLine(operators)
+		result: LinenoStorage = dictsConcatenation(operators, operands)
 		result = dict(sorted(result.items(), key=lambda x: (x[1], x[0].col_offset)))
 		result = self._removeObjectsOnSameLine(result)
+		return result
+
+	def _createOperatorObjForEachLine(self, operators: LinenoStorage)\
+		-> LinenoStorage:
+		result: LinenoStorage = {}
+		for (operator, lineno) in operators.items():
+			diff_between_num_start_and_end_lines =\
+				operator.end_lineno - operator.lineno # type: ignore
+			correction_with_start_and_end_range = 1
+			for current_lineno in range(1, diff_between_num_start_and_end_lines +
+				correction_with_start_and_end_range):
+				operator = ast.BoolOp(
+					lineno=current_lineno,
+					end_lineno=current_lineno,
+					col_offset=operator.col_offset
+				)
+				result.update({operator: current_lineno})
 		return result
 
 class IndentChecker:
