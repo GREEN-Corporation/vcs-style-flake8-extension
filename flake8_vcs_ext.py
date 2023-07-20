@@ -1,7 +1,8 @@
 import ast
-from typing import Any, Final, Generator, List, Tuple, Type, Union, Dict, Optional, Iterable
-
-from _types import LinenoSupportObjects, LinenoStorage
+from typing import (Any, Dict, Final, Generator, Iterable, List, Tuple, Type, # noqa
+					Union) # noqa
+# noqa
+from _types import LinenoStorage, LinenoSupportObjects
 
 MSG_VCS001: Final = "VCS001 no one tab for line continuation"
 
@@ -165,8 +166,10 @@ class IndentChecker:
 				return False
 		return True
 	
-	def _getArgWithIndentNotOne(self, args_indents: List[Union[ast.arg, ast.Name]])\
-		-> Union[None, ast.arg]:
+	def _getArgWithIndentNotOne(
+		self,
+		args_indents: List[Union[ast.arg, ast.Name]]
+	) -> Union[None, ast.arg]:
 		for arg in args_indents:
 			if arg.col_offset != self.correct_indent:
 				return arg
