@@ -161,7 +161,7 @@ class Plugin:
 
 	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
 		# иначе TypeError: 'Plugin' object is not iterable. Вместо __iter__
-		# должен быть run
+		# должен быть run согласно документации и примерам flake8
 		determinator = MultilineDeterminator(self.tree)
 		indents = determinator.getMultilinesIndents()
 		correct_indent = determinator.getCorrectIndent()
