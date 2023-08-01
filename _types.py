@@ -1,4 +1,4 @@
 import ast
 from typing import Union
 
-bodyStmts = Union[ast.FunctionDef, ast.ClassDef]
+ColOffsetAndLinenoSupportObjects = Union[ast.arg, ast.Name, ast.BoolOp]

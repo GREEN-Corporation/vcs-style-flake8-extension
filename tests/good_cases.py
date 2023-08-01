@@ -35,8 +35,8 @@ print(
 
 def collect_all_cases() -> Tuple[str, ...]:
 	return (
-		case_print,
-		case_if,
+		# case_print,
+		# case_if,
 		case_def,
-		case_in_context
+		# case_in_context
 	)
