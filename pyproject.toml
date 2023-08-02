@@ -7,7 +7,7 @@ name = "flake8_vcs_ext"
 version = "2.0.0"
 description = "Плагин flake8 с проверкой на дополнительные стандарты кода, принятые на проекте VCS"
 authors = ["Debianov <regdeb@mail.ru>"]
-readme = "readme.md"
+readme = "README.md"
 license = "GPL-2.0 license"
 classifiers = [
 	"Framework :: Flake8",
@@ -17,7 +17,7 @@ classifiers = [
 	"Operating System :: OS Independent",
 ]
 
-include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "readme.md"]
+include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "README.md"]
 
 [tool.poetry.urls]
 "Repository" = "https://github.com/GREEN-Corporation/vcs-style-flake8-extension"
