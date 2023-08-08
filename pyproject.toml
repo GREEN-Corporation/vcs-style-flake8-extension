@@ -1,22 +1,25 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.setuptools_scm]
 
 [tool.poetry]
 name = "flake8_vcs_ext"
-version = "2.0.0"
+version = "2.0.1"
 description = "Плагин flake8 с проверкой на дополнительные стандарты кода, принятые на проекте VCS"
 authors = ["Debianov <regdeb@mail.ru>"]
 readme = "README.md"
 license = "GPL-2.0 license"
 classifiers = [
 	"Framework :: Flake8",
+	"Environment :: Console",
 	"Intended Audience :: Developers",
+	"License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
 	"Topic :: Software Development :: Libraries :: Python Modules",
 	"Topic :: Software Development :: Quality Assurance",
-	"Operating System :: OS Independent",
 ]
 
 include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "README.md"]

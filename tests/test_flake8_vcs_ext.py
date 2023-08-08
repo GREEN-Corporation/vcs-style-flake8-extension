@@ -15,7 +15,7 @@ def _results(src_code: str) -> Set[str]:
 	tree = ast.parse(src_code)
 	plugin = Plugin(tree)
 	return {
-		f'{line}:{col} {msg}' for line, col, msg, _ in plugin.__iter__()
+		f'{line}:{col} {msg}' for line, col, msg, _ in plugin.run()
 	}
 
 @pytest.mark.parametrize('src_code', good_cases.collect_all_cases())
