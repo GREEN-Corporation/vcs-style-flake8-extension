@@ -188,7 +188,7 @@ class Plugin:
 	def __init__(self, tree: ast.Module) -> None:
 		self.tree = tree
 
-	def __iter__(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+	def run(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
 		# иначе TypeError: 'Plugin' object is not iterable. Вместо __iter__
 		# должен быть run согласно документации и примерам flake8
 		determinator = MultilineDeterminator(self.tree)
