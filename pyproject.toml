@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "flake8_vcs_ext"
-version = "2.0.0"
+version = "2.0.1"
 description = "Плагин flake8 с проверкой на дополнительные стандарты кода, принятые на проекте VCS"
 authors = ["Debianov <regdeb@mail.ru>"]
 readme = "README.md"
