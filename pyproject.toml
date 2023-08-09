@@ -22,7 +22,7 @@ classifiers = [
 	"Topic :: Software Development :: Quality Assurance",
 ]
 
-include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "README.md"]
+include = ["pyproject.toml", "flake8_vcs_ext.py", "LICENCE", "README.md", "_types.py"]
 
 [tool.poetry.urls]
 "Repository" = "https://github.com/GREEN-Corporation/vcs-style-flake8-extension"
